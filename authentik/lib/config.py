@@ -34,6 +34,7 @@ REDIS_ENV_KEYS = [
     f"{ENV_PREFIX}_REDIS__TLS_REQS",
 ]
 
+# Old key -> new key
 DEPRECATIONS = {
     "redis.broker_url": "broker.url",
     "redis.broker_transport_options": "broker.transport_options",
