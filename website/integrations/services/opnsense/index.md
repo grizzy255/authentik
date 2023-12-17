@@ -11,7 +11,7 @@ title: OPNsense
 > -- https://opnsense.org/
 
 :::note
-This is based on authentik 2022.4.1 and OPNsense 22.1.6-amd64 installed using https://docs.opnsense.org/manual/install.html. Instructions may differ between versions.
+This is based on authentik 2023.10.4 and OPNsense 23.7.10_1-amd64 installed using https://docs.opnsense.org/manual/install.html. Instructions may differ between versions.
 :::
 
 ## Preparation
@@ -28,7 +28,8 @@ In authentik, go and 'Create Service account' (under _Directory/Users_) for OPNs
 In this example, we'll use `opnsense` as the Service account's username
 
 :::note
-Take note of the password for this user as you'll need to give it to OPNsense in _Step 4_.
+Take note of the password for this user (`opnsese`) as you'll need to give it to OPNsense in _Step 5_.
+If you forget this password you can easliy reset this by going to 'Set Password' (under _Directory/Users_ and selecting `>` infront of the username)
 :::
 
 ### Step 2
@@ -42,8 +43,13 @@ Only settings that have been modified from default have been listed.
 **Protocol Settings**
 
 -   Name: LDAP
+-   Bind Flow: default-authentication-flow (Welcome to authentik!)
 -   Search group: opnsense
 -   Certificate: authentik Self-signed certificate
+
+:::note
+For troubleshooting issues you may have to Bind mode to _Direct Bind_ and Search Mode to _Direct Querying_
+:::
 
 ### Step 3
 
@@ -67,6 +73,7 @@ Only settings that have been modified from default have been listed.
 
 -   Name: LDAP
 -   Type: LDAP
+-   Integration: Local Docker connection
 
 ### Step 5
 
@@ -76,13 +83,26 @@ Change the following fields
 
 -   Descriptive name: authentik
 -   Hostname or IP address: authentik.company
--   Transport: SSL - Encrypted
+-   Transport: SSL - Encrypted (or select TCP Standard for non-encrypted connections - not recommended)
 -   Bind credentials
-    -   User DN: CN=opnsense-user,OU=users,DC=ldap,DC=goauthentik,DC=io
-    -   Password: whatever-you-set
+    -   User DN: cn=opnsense,cn=user,dc=ldap,dc=goauthentik,dc=io
+    -   Password: whatever-you-set in Step 1
     -   Base DN: DC=ldap,DC=goauthentik,DC=io
 -   Authentication containers: OU=users,DC=ldap,DC=goauthentik,DC=io;OU=groups,DC=ldap,DC=goauthentik,DC=io
 -   Extended Query: &(objectClass=user)
+-   Read Properties: Tick
+-   Synchronize groups: Tick
+
+### Step 6
+
+Test the connection from Opnsense
+_System/Access/Tester_
+
+Select _Authentication Server_ as authentik
+Enter a Username and Password of a user that exists on Authentik (this is not the opnsense user you created in step 1)
+Select Test
+
+
 
 ![](./opnsense1.png)
 
